@@ -17,12 +17,13 @@ fn main() {
     let gameboard_view: GameBoardView = GameBoardView::new();
 
     window.set_lazy(true);
+    let mut y = 775.0;
     while let Some(e) = window.next() {
         window.draw_2d(&e, |c, g, _| {
             clear(gameboard_view.background_color, g);
             rectangle(
                 gameboard_view.snake_color,
-                [775.0, 0.0, 25.0, 25.0],
+                [y, 0.0, 25.0, 25.0],
                 c.transform,
                 g,
             );
@@ -33,5 +34,13 @@ fn main() {
                 g,
             );
         });
+
+        match e.press_args() {
+            Some(Button::Keyboard(Key::Left)) => y = y - 25.0,
+            Some(Button::Keyboard(Key::Right)) => print!("RIGHT!"),
+            Some(Button::Keyboard(Key::Up)) => print!("UP!"),
+            Some(Button::Keyboard(Key::Down)) => print!("DOWN!"),
+            _ => (),
+        }
     }
 }
