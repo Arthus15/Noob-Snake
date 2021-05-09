@@ -1,3 +1,5 @@
-fn main() {
-    println!("Hello, world!");
-}
+pub use crate::gameboard_view::GameBoardView;
+
+mod gameboard_view;
+
+fn main() {}
