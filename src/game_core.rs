@@ -42,8 +42,8 @@ impl Position {
     }
 
     pub fn random(x_max: u16, y_max: u16) -> Position {
-        let x = rand::thread_rng().gen_range(0..x_max) / 25;
-        let y = rand::thread_rng().gen_range(0..y_max) / 25;
+        let x = (rand::thread_rng().gen_range(0..x_max) / 25) * 25;
+        let y = (rand::thread_rng().gen_range(0..y_max) / 25) * 25;
 
         Position { x, y }
     }
@@ -68,6 +68,26 @@ impl GameCore {
                 Player::Snake(Snake::new(0, 0)),
                 Player::Fruit(Position::random(800, 600)),
             ],
+        }
+    }
+
+    pub fn move_snake(&mut self, dir: Direction) {
+        let snake = self.get_snake();
+        match dir {
+            Direction::Up => snake.position.y = snake.position.y - 25,
+            Direction::Down => snake.position.y = snake.position.y + 25,
+            Direction::Left => snake.position.x = snake.position.x - 25,
+            Direction::Right => snake.position.x = snake.position.x + 25,
+            Direction::None => (),
+        }
+    }
+
+    pub fn get_snake(&mut self) -> &mut Snake {
+        let snake_enum = &mut self.players[0];
+        if let Player::Snake(snake) = snake_enum {
+            snake
+        } else {
+            panic!("No snake found!");
         }
     }
 }

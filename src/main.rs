@@ -1,4 +1,4 @@
-pub use crate::game_core::{GameCore, Player};
+pub use crate::game_core::{Direction, GameCore, Player};
 pub use crate::gameboard_view::GameBoardView;
 
 use piston_window::*;
@@ -17,10 +17,9 @@ fn main() {
         .build()
         .unwrap_or_else(|e| panic!("Failed to build PistonWindow: {}", e));
 
-    let gameboard_view: GameBoardView = GameBoardView::new();
+    let mut gameboard_view: GameBoardView = GameBoardView::new();
 
     window.set_lazy(true);
-    let mut y = 775.0;
     while let Some(e) = window.next() {
         window.draw_2d(&e, |c, g, _| {
             clear(gameboard_view.background_color, g);
@@ -46,10 +45,10 @@ fn main() {
         });
 
         match e.press_args() {
-            Some(Button::Keyboard(Key::Left)) => y = y - 25.0,
-            Some(Button::Keyboard(Key::Right)) => print!("RIGHT!"),
-            Some(Button::Keyboard(Key::Up)) => print!("UP!"),
-            Some(Button::Keyboard(Key::Down)) => print!("DOWN!"),
+            Some(Button::Keyboard(Key::Left)) => gameboard_view.game.move_snake(Direction::Left),
+            Some(Button::Keyboard(Key::Right)) => gameboard_view.game.move_snake(Direction::Right),
+            Some(Button::Keyboard(Key::Up)) => gameboard_view.game.move_snake(Direction::Up),
+            Some(Button::Keyboard(Key::Down)) => gameboard_view.game.move_snake(Direction::Down),
             _ => (),
         }
     }
