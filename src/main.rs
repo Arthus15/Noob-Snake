@@ -51,5 +51,9 @@ fn main() {
             Some(Button::Keyboard(Key::Down)) => gameboard_view.game.move_snake(Direction::Down),
             _ => (),
         }
+
+        if gameboard_view.game.is_fruit_eatable() {
+            gameboard_view.game.eat_fruit();
+        }
     }
 }

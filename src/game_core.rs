@@ -30,6 +30,7 @@ pub struct Snake {
 
 pub struct GameCore {
     pub players: [Player; 2],
+    pub score: u16,
 }
 
 impl Position {
@@ -47,7 +48,22 @@ impl Position {
 
         Position { x, y }
     }
+
+    fn calculate_new_position(&mut self) {
+        let new_pos = Position::random(800, 600);
+
+        self.x = new_pos.x;
+        self.y = new_pos.y;
+    }
 }
+
+impl PartialEq for Position {
+    fn eq(&self, other: &Position) -> bool {
+        self.x == other.x && self.y == other.y
+    }
+}
+
+impl Eq for Position {}
 
 impl Snake {
     pub fn new(x: u16, y: u16) -> Snake {
@@ -68,26 +84,85 @@ impl GameCore {
                 Player::Snake(Snake::new(0, 0)),
                 Player::Fruit(Position::random(800, 600)),
             ],
+            score: 0,
         }
     }
 
     pub fn move_snake(&mut self, dir: Direction) {
-        let snake = self.get_snake();
+        let snake = self.get_snake_mut();
         match dir {
-            Direction::Up => snake.position.y = snake.position.y - 25,
-            Direction::Down => snake.position.y = snake.position.y + 25,
-            Direction::Left => snake.position.x = snake.position.x - 25,
-            Direction::Right => snake.position.x = snake.position.x + 25,
+            Direction::Up => {
+                if snake.position.y > 0 {
+                    snake.position.y = snake.position.y - 25;
+                }
+            }
+            Direction::Down => {
+                if snake.position.y < 575 {
+                    snake.position.y = snake.position.y + 25;
+                }
+            }
+            Direction::Left => {
+                if snake.position.x > 0 {
+                    snake.position.x = snake.position.x - 25;
+                }
+            }
+            Direction::Right => {
+                if snake.position.x < 775 {
+                    snake.position.x = snake.position.x + 25;
+                }
+            }
             Direction::None => (),
         }
     }
 
-    pub fn get_snake(&mut self) -> &mut Snake {
+    pub fn eat_fruit(&mut self) {
+        self.score += 1;
+
+        let fruit = self.get_fruit_mut();
+
+        fruit.calculate_new_position();
+    }
+
+    pub fn is_fruit_eatable(&self) -> bool {
+        let fruit = self.get_fruit_unmut();
+        let snake = self.get_snake_unmut();
+
+        fruit == &snake.position
+    }
+
+    fn get_snake_mut(&mut self) -> &mut Snake {
         let snake_enum = &mut self.players[0];
         if let Player::Snake(snake) = snake_enum {
             snake
         } else {
             panic!("No snake found!");
+        }
+    }
+
+    fn get_snake_unmut(&self) -> &Snake {
+        let snake_enum = &self.players[0];
+        if let Player::Snake(snake) = snake_enum {
+            snake
+        } else {
+            panic!("No snake found!");
+        }
+    }
+
+    fn get_fruit_mut(&mut self) -> &mut Position {
+        let snake_enum = &mut self.players[1];
+        if let Player::Fruit(pos) = snake_enum {
+            pos
+        } else {
+            panic!("No fruit found!");
+        }
+    }
+
+    fn get_fruit_unmut(&self) -> &Position {
+        let snake_enum = &self.players[1];
+        if let Player::Fruit(pos) = snake_enum {
+            pos
+        } else {
+            panic!("No fruit found!");
         }
     }
 }
