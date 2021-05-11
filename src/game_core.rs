@@ -1,6 +1,6 @@
 use rand::Rng;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum Direction {
     Up,
     Down,
@@ -9,25 +9,26 @@ pub enum Direction {
     None,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Player {
     Snake(Snake),
     Fruit(Position),
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Position {
     pub x: u16,
     pub y: u16,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Snake {
     pub position: Position,
     pub body: Vec<Position>,
     pub last_direction: Direction,
 }
 
+#[derive(Debug)]
 pub struct GameCore {
     pub players: [Player; 2],
     pub score: u16,
@@ -94,21 +95,25 @@ impl GameCore {
             Direction::Up => {
                 if snake.position.y > 0 {
                     snake.position.y = snake.position.y - 25;
+                    snake.last_direction = Direction::Up;
                 }
             }
             Direction::Down => {
                 if snake.position.y < 575 {
                     snake.position.y = snake.position.y + 25;
+                    snake.last_direction = Direction::Down;
                 }
             }
             Direction::Left => {
                 if snake.position.x > 0 {
                     snake.position.x = snake.position.x - 25;
+                    snake.last_direction = Direction::Left;
                 }
             }
             Direction::Right => {
                 if snake.position.x < 775 {
                     snake.position.x = snake.position.x + 25;
+                    snake.last_direction = Direction::Right;
                 }
             }
             Direction::None => (),
@@ -130,8 +135,8 @@ impl GameCore {
         fruit == &snake.position
     }
 
-    fn get_snake_mut(&mut self) -> &mut Snake {
-        let snake_enum = &mut self.players[0];
+    pub fn get_snake_unmut(&self) -> &Snake {
+        let snake_enum = &self.players[0];
         if let Player::Snake(snake) = snake_enum {
             snake
         } else {
@@ -139,8 +144,8 @@ impl GameCore {
         }
     }
 
-    fn get_snake_unmut(&self) -> &Snake {
-        let snake_enum = &self.players[0];
+    fn get_snake_mut(&mut self) -> &mut Snake {
+        let snake_enum = &mut self.players[0];
         if let Player::Snake(snake) = snake_enum {
             snake
         } else {
