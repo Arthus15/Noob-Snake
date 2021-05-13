@@ -1,6 +1,6 @@
 use rand::Rng;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Direction {
     Up,
     Down,
@@ -57,8 +57,8 @@ impl Position {
         self.y = new_pos.y;
     }
 
-    pub fn _move(&mut self, dir: Direction) {
-        return match dir {
+    pub fn _move(&mut self, dir: Direction) -> bool {
+        match dir {
             Direction::Up => {
                 self.y = self.y - 25;
             }
@@ -71,8 +71,12 @@ impl Position {
             Direction::Right => {
                 self.x = self.x + 25;
             }
-            Direction::None => (),
+            Direction::None => {
+                return false;
+            }
         };
+
+        true
     }
 }
 
@@ -83,6 +87,43 @@ impl PartialEq for Position {
 }
 
 impl Eq for Position {}
+
+impl Direction {
+    fn oposite(self, b: Direction) -> bool {
+        match self {
+            Direction::Up => {
+                if b == Direction::Down {
+                    return true;
+                }
+                return false;
+            }
+            Direction::Down => {
+                if b == Direction::Up {
+                    return true;
+                }
+
+                return false;
+            }
+            Direction::Left => {
+                if b == Direction::Right {
+                    return true;
+                }
+
+                return false;
+            }
+            Direction::Right => {
+                if b == Direction::Left {
+                    return true;
+                }
+
+                return false;
+            }
+            Direction::None => {
+                return false;
+            }
+        };
+    }
+}
 
 impl Snake {
     pub fn new(x: u16, y: u16) -> Snake {
@@ -101,7 +142,7 @@ fn valid_position(snake_pos: Position, dir: Direction) -> bool {
 
     pos._move(dir);
 
-    if pos.y >= 600 || pos.x >= 800 || pos.x <= 0 || pos.y <= 0 {
+    if pos.y > 575 || pos.x > 775 || pos.x <= 0 || pos.y <= 0 {
         return false;
     }
 
@@ -112,7 +153,7 @@ impl GameCore {
     pub fn new() -> GameCore {
         GameCore {
             players: [
-                Player::Snake(Snake::new(0, 0)),
+                Player::Snake(Snake::new(375, 275)),
                 Player::Fruit(Position::random(800, 600)),
             ],
             score: 0,
@@ -121,6 +162,10 @@ impl GameCore {
 
     pub fn move_snake(&mut self, dir: Direction, _refresh_auto_move: &mut u16) {
         let snake = self.get_snake_mut();
+
+        if dir.oposite(snake.last_direction) {
+            return;
+        }
 
         if !valid_position(snake.position, dir) {
             panic!("You lost!");
