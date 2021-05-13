@@ -56,6 +56,24 @@ impl Position {
         self.x = new_pos.x;
         self.y = new_pos.y;
     }
+
+    pub fn _move(&mut self, dir: Direction) {
+        return match dir {
+            Direction::Up => {
+                self.y = self.y - 25;
+            }
+            Direction::Down => {
+                self.y = self.y + 25;
+            }
+            Direction::Left => {
+                self.x = self.x - 25;
+            }
+            Direction::Right => {
+                self.x = self.x + 25;
+            }
+            Direction::None => (),
+        };
+    }
 }
 
 impl PartialEq for Position {
@@ -78,6 +96,18 @@ impl Snake {
     }
 }
 
+fn valid_position(snake_pos: Position, dir: Direction) -> bool {
+    let mut pos = snake_pos;
+
+    pos._move(dir);
+
+    if pos.y >= 600 || pos.x >= 800 || pos.x <= 0 || pos.y <= 0 {
+        return false;
+    }
+
+    true
+}
+
 impl GameCore {
     pub fn new() -> GameCore {
         GameCore {
@@ -92,37 +122,13 @@ impl GameCore {
     pub fn move_snake(&mut self, dir: Direction, _refresh_auto_move: &mut u16) {
         let snake = self.get_snake_mut();
 
-        return match dir {
-            Direction::Up => {
-                if snake.position.y > 0 {
-                    snake.position.y = snake.position.y - 25;
-                    snake.last_direction = Direction::Up;
-                    *_refresh_auto_move = 0;
-                }
-            }
-            Direction::Down => {
-                if snake.position.y < 575 {
-                    snake.position.y = snake.position.y + 25;
-                    snake.last_direction = Direction::Down;
-                    *_refresh_auto_move = 0;
-                }
-            }
-            Direction::Left => {
-                if snake.position.x > 0 {
-                    snake.position.x = snake.position.x - 25;
-                    snake.last_direction = Direction::Left;
-                    *_refresh_auto_move = 0;
-                }
-            }
-            Direction::Right => {
-                if snake.position.x < 775 {
-                    snake.position.x = snake.position.x + 25;
-                    snake.last_direction = Direction::Right;
-                    *_refresh_auto_move = 0;
-                }
-            }
-            Direction::None => (),
-        };
+        if !valid_position(snake.position, dir) {
+            panic!("You lost!");
+        }
+
+        snake.position._move(dir);
+        snake.last_direction = dir;
+        *_refresh_auto_move = 0;
     }
 
     pub fn eat_fruit(&mut self) {
