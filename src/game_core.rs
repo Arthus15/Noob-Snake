@@ -89,35 +89,40 @@ impl GameCore {
         }
     }
 
-    pub fn move_snake(&mut self, dir: Direction) {
+    pub fn move_snake(&mut self, dir: Direction, _refresh_auto_move: &mut u16) {
         let snake = self.get_snake_mut();
-        match dir {
+
+        return match dir {
             Direction::Up => {
                 if snake.position.y > 0 {
                     snake.position.y = snake.position.y - 25;
                     snake.last_direction = Direction::Up;
+                    *_refresh_auto_move = 0;
                 }
             }
             Direction::Down => {
                 if snake.position.y < 575 {
                     snake.position.y = snake.position.y + 25;
                     snake.last_direction = Direction::Down;
+                    *_refresh_auto_move = 0;
                 }
             }
             Direction::Left => {
                 if snake.position.x > 0 {
                     snake.position.x = snake.position.x - 25;
                     snake.last_direction = Direction::Left;
+                    *_refresh_auto_move = 0;
                 }
             }
             Direction::Right => {
                 if snake.position.x < 775 {
                     snake.position.x = snake.position.x + 25;
                     snake.last_direction = Direction::Right;
+                    *_refresh_auto_move = 0;
                 }
             }
             Direction::None => (),
-        }
+        };
     }
 
     pub fn eat_fruit(&mut self) {

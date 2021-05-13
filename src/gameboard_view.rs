@@ -35,7 +35,7 @@ impl GameBoardView {
     pub fn start(&mut self) {
         //Windows setup
         let mut window: PistonWindow = self.create_piston_window();
-        let mut refresh_per_move = 0;
+        let mut refresh_per_move: u16 = 0;
 
         while let Some(e) = window.next() {
             window.draw_2d(&e, |c, g, _| {
@@ -63,26 +63,24 @@ impl GameBoardView {
 
             match e.press_args() {
                 Some(Button::Keyboard(Key::Left)) => {
-                    self.game.move_snake(Direction::Left);
-                    refresh_per_move = 0;
+                    self.game.move_snake(Direction::Left, &mut refresh_per_move);
                 }
                 Some(Button::Keyboard(Key::Right)) => {
-                    self.game.move_snake(Direction::Right);
-                    refresh_per_move = 0;
+                    self.game
+                        .move_snake(Direction::Right, &mut refresh_per_move);
                 }
                 Some(Button::Keyboard(Key::Up)) => {
-                    self.game.move_snake(Direction::Up);
-                    refresh_per_move = 0;
+                    self.game.move_snake(Direction::Up, &mut refresh_per_move);
                 }
                 Some(Button::Keyboard(Key::Down)) => {
-                    self.game.move_snake(Direction::Down);
-                    refresh_per_move = 0;
+                    self.game.move_snake(Direction::Down, &mut refresh_per_move);
                 }
                 _ => {
                     if refresh_per_move >= 200 {
-                        self.game
-                            .move_snake(self.game.get_snake_unmut().last_direction);
-                        refresh_per_move = 0;
+                        self.game.move_snake(
+                            self.game.get_snake_unmut().last_direction,
+                            &mut refresh_per_move,
+                        );
                     } else {
                         refresh_per_move += 1;
                     }
