@@ -27,7 +27,7 @@ impl GameBoardView {
             snake_color: [1.0, 0.0, 1.0, 0.5],
             fruit_color: [1.0, 0.4, 0.1, 1.0],
             title: String::from("Noob-Snake"),
-            difficulty: Difficulty::Easy,
+            difficulty: Difficulty::Hard,
             game: GameCore::new(),
         }
     }
@@ -48,6 +48,18 @@ impl GameBoardView {
                         c.transform,
                         g,
                     );
+
+                    if snake.body.len() > 0 {
+                        for n in 0..(snake.body.len()) {
+                            let body_part = snake.body[n];
+                            rectangle(
+                                [0.0, 0.0, 1.0, 1.0],
+                                [body_part.0.x as f64, body_part.0.y as f64, 25.0, 25.0],
+                                c.transform,
+                                g,
+                            );
+                        }
+                    }
                 }
 
                 let fruit_enum = &self.game.players[1];
@@ -76,7 +88,7 @@ impl GameBoardView {
                     self.game.move_snake(Direction::Down, &mut refresh_per_move);
                 }
                 _ => {
-                    if refresh_per_move >= 200 {
+                    if refresh_per_move >= 100 {
                         self.game.move_snake(
                             self.game.get_snake_unmut().last_direction,
                             &mut refresh_per_move,
@@ -89,6 +101,7 @@ impl GameBoardView {
 
             if self.game.is_fruit_eatable() {
                 self.game.eat_fruit();
+                self.game.add_tail();
             }
         }
     }
