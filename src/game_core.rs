@@ -89,25 +89,6 @@ impl PartialEq for Position {
 impl Eq for Position {}
 
 impl Direction {
-    fn copy(dir: Direction) -> Direction {
-        match dir {
-            Direction::Up => {
-                return Direction::Up;
-            }
-            Direction::Down => {
-                return Direction::Down;
-            }
-            Direction::Left => {
-                return Direction::Left;
-            }
-            Direction::Right => {
-                return Direction::Right;
-            }
-            Direction::None => {
-                return Direction::None;
-            }
-        };
-    }
     fn oposite(self, b: Direction) -> bool {
         match self {
             Direction::Up => {
@@ -206,27 +187,32 @@ impl GameCore {
         }
 
         if !valid_position(snake.position, dir) {
-            panic!("You lost!");
+            panic!("You've lost!");
         }
 
         snake.position._move(dir);
         snake.last_direction = dir;
         *_refresh_auto_move = 0;
         if snake.body.len() > 0 {
-            for n in (0..snake.body.len()).rev() {
-                let mut body_part = snake.body[n];
-                body_part.0._move(body_part.1);
+            self.move_snake_body();
+        }
+    }
 
-                if n == 0 {
-                    body_part.1 = snake.last_direction;
-                } else {
-                    let direction = snake.body[n - 1].1;
-                    body_part.1 = direction;
-                }
+    pub fn move_snake_body(&mut self) {
+        let snake = self.get_snake_mut();
+        for n in (0..snake.body.len()).rev() {
+            let mut body_part = snake.body[n];
+            body_part.0._move(body_part.1);
 
-                snake.body.remove(n);
-                snake.body.insert(n, body_part);
+            if n == 0 {
+                body_part.1 = snake.last_direction;
+            } else {
+                let direction = snake.body[n - 1].1;
+                body_part.1 = direction;
             }
+
+            snake.body.remove(n);
+            snake.body.insert(n, body_part);
         }
     }
 
@@ -251,6 +237,22 @@ impl GameCore {
         } else {
             panic!("No snake found!");
         }
+    }
+
+    pub fn add_tail(&mut self) {
+        let snake = self.get_snake_mut();
+        let body_length = snake.body.len();
+        let old_tail;
+
+        if body_length > 0 {
+            old_tail = snake.body[body_length - 1];
+        } else {
+            old_tail = (snake.position, snake.last_direction);
+        }
+
+        let new_tail = get_new_tail(old_tail);
+
+        snake.body.insert(body_length, new_tail);
     }
 
     fn get_snake_mut(&mut self) -> &mut Snake {
@@ -278,21 +280,5 @@ impl GameCore {
         } else {
             panic!("No fruit found!");
         }
-    }
-
-    pub fn add_tail(&mut self) {
-        let snake = self.get_snake_mut();
-        let body_length = snake.body.len();
-        let old_tail;
-
-        if body_length > 0 {
-            old_tail = snake.body[body_length - 1];
-        } else {
-            old_tail = (snake.position, snake.last_direction);
-        }
-
-        let new_tail = get_new_tail(old_tail);
-
-        snake.body.insert(body_length, new_tail);
     }
 }
