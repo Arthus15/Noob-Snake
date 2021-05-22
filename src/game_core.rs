@@ -196,6 +196,8 @@ impl GameCore {
         if snake.body.len() > 0 {
             self.move_snake_body();
         }
+
+        self.check_hit_body();
     }
 
     pub fn move_snake_body(&mut self) {
@@ -213,6 +215,18 @@ impl GameCore {
 
             snake.body.remove(n);
             snake.body.insert(n, body_part);
+        }
+    }
+
+    fn check_hit_body(&self) {
+        let snake = self.get_snake_unmut();
+
+        for n in (0..snake.body.len()).rev() {
+            let body_part = snake.body[n];
+
+            if snake.position == body_part.0 {
+                panic!("You lost");
+            }
         }
     }
 
