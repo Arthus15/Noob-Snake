@@ -36,6 +36,12 @@ impl GameBoardView {
         //Windows setup
         let mut window: PistonWindow = self.create_piston_window();
         let mut refresh_per_move: u16 = 0;
+        let assets = find_folder::Search::ParentsThenKids(3, 3)
+            .for_folder("resources")
+            .unwrap();
+
+        let ref font = assets.join("Anonymous.ttf");
+        let mut glyph_cache = window.load_font(font).unwrap();
 
         while let Some(e) = window.next() {
             window.draw_2d(&e, |c, g, _| {
@@ -71,6 +77,16 @@ impl GameBoardView {
                         g,
                     );
                 }
+
+                Text::new(10)
+                    .draw(
+                        &format!("Holi"),
+                        &mut glyph_cache,
+                        &c.draw_state,
+                        c.transform.trans(50.0, 50.0),
+                        g,
+                    )
+                    .unwrap();
             });
 
             match e.press_args() {
