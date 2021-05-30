@@ -44,7 +44,7 @@ impl GameBoardView {
         let mut glyph_cache = window.load_font(font).unwrap();
 
         while let Some(e) = window.next() {
-            window.draw_2d(&e, |c, g, _| {
+            window.draw_2d(&e, |c, g, device| {
                 clear(self.background_color, g);
                 let snake_enum = &self.game.players[0];
                 if let Player::Snake(snake) = snake_enum {
@@ -80,13 +80,15 @@ impl GameBoardView {
 
                 Text::new(10)
                     .draw(
-                        &format!("Holi"),
+                        &format!("Score: {}", self.game.score),
                         &mut glyph_cache,
                         &c.draw_state,
-                        c.transform.trans(50.0, 50.0),
+                        c.transform.trans(25.0, 25.0),
                         g,
                     )
                     .unwrap();
+
+                glyph_cache.factory.encoder.flush(device);
             });
 
             match e.press_args() {

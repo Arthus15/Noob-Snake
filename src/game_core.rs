@@ -231,7 +231,7 @@ impl GameCore {
     }
 
     pub fn eat_fruit(&mut self) {
-        self.score += 1;
+        self.score += 100;
 
         let fruit = self.get_fruit_mut();
         fruit.calculate_new_position();
